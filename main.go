@@ -13,6 +13,8 @@ import (
 
 	"time"
 
+	"os"
+
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
@@ -53,17 +55,12 @@ type PageData struct {
 	UserEmail       string
 }
 
-// connectToDB подключается к PostgreSQL
 func connectToDB() (*sql.DB, error) {
-	dsn := "host=localhost port=5432 user=postgres password=123 dbname=postgres sslmode=disable"
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		dsn = "host=localhost port=5432 user=postgres password=123 dbname=postgres sslmode=disable"
 	}
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-	return db, nil
+	return sql.Open("postgres", dsn)
 }
 
 // index — обработчик для страницы /main (список постов без авторизации, просто шаблон)
@@ -86,7 +83,6 @@ func creat(w http.ResponseWriter, r *http.Request) {
 }
 
 func main_func(w http.ResponseWriter, r *http.Request) {
-	// 1) Подключаемся к БД и получаем посты (без изменений)
 	db, err := connectToDB()
 	if err != nil {
 		http.Error(w, "Error connecting to the database", http.StatusInternalServerError)
@@ -116,21 +112,17 @@ func main_func(w http.ResponseWriter, r *http.Request) {
 	auth, _ := session.Values["authenticated"].(bool)
 	isAuth := auth
 
-	// 3) Формируем структуру для шаблона
 	data := TemplateData{
 		Posts:           posts,
 		IsAuthenticated: isAuth,
 	}
 
-	// 4) Парсим шаблоны в правильном порядке:
-	//    сперва все define-блоки из header.html и title.html, потом main.html
 	tmpl := template.Must(template.ParseFiles(
-		"html/header.html", // <nav>…{{if .IsAuthenticated}}…
-		"html/title.html",  // здесь выводится разный заголовок в зависимости от .IsAuthenticated
-		"html/main.html",   // должен содержать {{define "main"}}…{{template "header"}}{{template "title"}}…{{end}}
+		"html/header.html",
+		"html/title.html",
+		"html/main.html",
 	))
 
-	// 5) Рендерим именно тот блок, который определён в main.html
 	if err := tmpl.ExecuteTemplate(w, "main", data); err != nil {
 		http.Error(w, "Error executing template: "+err.Error(), http.StatusInternalServerError)
 	}
@@ -384,9 +376,8 @@ func updatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newPhotoID := currentPhotoID // по умолчанию оставляем без изменений
+	newPhotoID := currentPhotoID
 
-	// Если пользователь поставил галку «Удалить фото», сбрасываем newPhotoID на NULL
 	if deletePhoto == "1" {
 		newPhotoID = sql.NullInt64{Valid: false}
 	}
@@ -414,12 +405,8 @@ func updatePostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		newPhotoID = sql.NullInt64{Int64: int64(insertedID), Valid: true}
 
-		// Если был старый файл (currentPhotoID.Valid == true), его, при желании, можно удалить:
-		// _, _ = db.Exec("DELETE FROM files WHERE id = $1", currentPhotoID.Int64)
-		// В примере не удаляем: оставляем старую запись в БД, чтобы не потерять историю.
 	}
 
-	// Теперь обновляем запись в post со всеми полями
 	if newPhotoID.Valid {
 		// Обновляем, указывая newPhotoID
 		_, err = db.Exec(
