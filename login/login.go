@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 
+	"os"
+
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
 )
@@ -14,16 +16,11 @@ type User struct {
 
 // connectToDB подключается к той же базе PostgreSQL
 func connectToDB() (*sql.DB, error) {
-	// Поменяйте параметры на свои (host, port, user, password, dbname)
-	dsn := "host=localhost port=5432 user=postgres password=123 dbname=postgres sslmode=disable"
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		dsn = "host=localhost port=5432 user=postgres password=123 dbname=postgres sslmode=disable"
 	}
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-	return db, nil
+	return sql.Open("postgres", dsn)
 }
 
 var Store = sessions.NewCookieStore([]byte("something-very-secret"))

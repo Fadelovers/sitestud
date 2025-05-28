@@ -11,6 +11,8 @@ import (
 	"net/smtp"
 	"sync"
 
+	"os"
+
 	_ "github.com/lib/pq"
 )
 
@@ -26,16 +28,11 @@ var users = make(map[string]User)
 var mu sync.Mutex
 
 func connectToDB() (*sql.DB, error) {
-	// Замените user, password, dbname на ваши реальные значения
-	dsn := "host=localhost port=5432 user=postgres password=123 dbname=postgres sslmode=disable"
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		dsn = "host=localhost port=5432 user=postgres password=123 dbname=postgres sslmode=disable"
 	}
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-	return db, nil
+	return sql.Open("postgres", dsn)
 }
 
 func generateConfirmationCode() string {
