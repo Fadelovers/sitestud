@@ -1,0 +1,60 @@
+{{define "Show"}}
+{{template "header"}}
+
+<main role="main" class="inner cover">
+  <h1 class="cover-heading">{{.Post.Title}}</h1>
+  <p class="lead">{{.Post.Full_text}}</p>
+
+  {{if .Post.PhotoID.Valid}}
+    <div style="margin: 20px 0;">
+      <img src="/file/{{.Post.PhotoID.Int64}}" alt="Фото статьи" style="max-width: 100%; height: auto;">
+    </div>
+  {{end}}
+
+  {{if .IsAuthenticated}}
+    <div style="margin-top: 20px;">
+      <form action="/post/edit/{{.Post.Id}}" method="get" style="display:inline-block; margin-right: 8px;">
+        <button type="submit" class="btn btn-sm btn-outline-primary">Edit</button>
+      </form>
+      <form action="/Delet/{{.Post.Id}}" method="post" style="display:inline-block;">
+        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+      </form>
+    </div>
+  {{end}}
+
+  <hr>
+
+  <section id="comments" style="margin-top: 40px;">
+    <h3>Комментарии</h3>
+
+    {{range .Comments}}
+      <div class="card mb-2">
+        <div class="card-body">
+          <p class="card-text">{{.Content}}</p>
+          <footer class="blockquote-footer">{{.UserEmail}} <cite title="Дата">{{.CreatedAt.Format "02.01.2006 15:04"}}</cite></footer>
+        </div>
+      </div>
+    {{else}}
+      <p>Нет комментариев.</p>
+    {{end}}
+
+    <hr>
+
+    {{if .IsAuthenticated}}
+      <form action="/comment/add" method="POST">
+        <input type="hidden" name="post_id" value="{{.Post.Id}}">
+        <div class="form-group">
+          <label for="content">Ваш комментарий:</label>
+          <textarea id="content" name="content" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success mt-2">Отправить комментарий</button>
+      </form>
+    {{else}}
+      <p><a href="/main">Войдите</a>, чтобы оставить комментарий.</p>
+    {{end}}
+  </section>
+</main>
+
+</body>
+</html>
+{{end}}

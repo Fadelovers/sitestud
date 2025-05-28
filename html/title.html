@@ -1,0 +1,19 @@
+{{define "title"}}
+
+
+  
+<nav class="nav nav-masthead justify-content-center">
+  <a class="nav-link" href="/">Главная</a>
+  <a class="nav-link" href="/today">Сегодня</a>  <!-- новая вкладка -->
+  {{if .IsAuthenticated}}
+    <a class="nav-link" href="/creat">Новая новость</a>
+   <form action="/logout" method="post" style="display:inline-block; margin-left: 10px;">
+        <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
+    </form>
+  {{else}}
+    <a class="nav-link" href="/main">Войти</a>
+    <a class="nav-link" href="/reg">Регистрация</a>
+  {{end}}
+</nav>
+
+{{end}}

@@ -1,0 +1,23 @@
+{{define "confirm"}}
+{{template "header"}}
+
+<main role="main" class="inner cover">
+  <h1 class="cover-heading">Подтверждение регистрации</h1>
+  <form method="POST" action="/confirm_code">
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="code">Код подтверждения:</label>
+      <input type="text" id="code" name="code" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Подтвердить</button>
+  </form>
+</main>
+
+</body>
+</html>
+{{end}}

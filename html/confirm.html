@@ -1,0 +1,14 @@
+{{define "confirm"}}
+{{template "header_for_connect"}}
+</head>
+<body>
+    <h1>Confirm Registration</h1>
+    <form id="confirmForm" method="POST" action="/ConfirmUser">
+        <input type="hidden" id="email" name="email" value="{{.Email}}">
+        <label for="code">Confirmation Code:</label>
+        <input type="text" id="code" name="code" required><br>
+        <input type="submit" value="Confirm">
+    </form>
+</body>
+</html>
+{{end}}

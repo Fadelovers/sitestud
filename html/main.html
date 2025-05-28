@@ -1,0 +1,22 @@
+{{define "main"}}
+
+<body>
+  <!-- Передаём контекст в header и title -->
+  {{template "header" .}}
+  {{template "title" .}}
+
+  <main class="px-3">
+    {{range .Posts}}
+      <div class="alert alert-danger">
+        <h2>{{.Title}}</h2>
+        <p>{{.Anons}}</p>
+        <a href="/post/{{.Id}}" class="btn btn=danger">Full Text</a>
+      </div>
+    {{else}}
+      <p>no News</p>
+    {{end}}
+  </main>
+
+</body>
+{{end}}
+

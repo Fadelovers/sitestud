@@ -1,0 +1,72 @@
+{{define "edit"}}
+{{template "header"}}
+
+<main role="main" class="inner cover">
+  <h1 class="cover-heading">Редактировать статью</h1>
+  <!-- multipart/form-data, чтобы можно было загружать файл -->
+  <form action="/post/update" method="POST" enctype="multipart/form-data">
+    <!-- Скрытое поле ID поста -->
+    <input type="hidden" name="id" value="{{.Post.Id}}">
+
+    <div class="form-group">
+      <label for="title">Заголовок:</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        class="form-control"
+        value="{{.Post.Title}}"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="anons">Анонс:</label>
+      <textarea
+        id="anons"
+        name="anons"
+        class="form-control"
+        rows="3"
+        required
+      >{{.Post.Anons}}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="full_text">Полный текст:</label>
+      <textarea
+        id="full_text"
+        name="full_text"
+        class="form-control"
+        rows="6"
+        required
+      >{{.Post.Full_text}}</textarea>
+    </div>
+
+    {{/* Покажем текущее фото, если оно есть */}}
+    {{if .Post.PhotoID.Valid}}
+      <div class="form-group">
+        <p>Текущее фото:</p>
+        <img
+          src="/file/{{.Post.PhotoID.Int64}}"
+          alt="Фото текущей статьи"
+          style="max-width: 200px; height: auto; margin-bottom: 8px;"
+        ><br>
+        <!-- Флажок для удаления фото -->
+        <input type="checkbox" id="delete_photo" name="delete_photo" value="1">
+        <label for="delete_photo">Удалить фото</label>
+      </div>
+    {{end}}
+
+    <div class="form-group">
+      <label for="photo">Загрузить новое фото (заменит текущее):</label>
+      <input type="file" id="photo" name="photo" class="form-control-file">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a href="/" class="btn btn-secondary ml-2">Отмена</a>
+  </form>
+</main>
+
+</body>
+</html>
+{{end}}
