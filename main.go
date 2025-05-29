@@ -56,6 +56,7 @@ type PageData struct {
 }
 
 func connectToDB() (*sql.DB, error) {
+	log.Println("Connecting to DB with DSN:", os.Getenv("DATABASE_URL"))
 	dsn := os.Getenv("DATABASE_PUBLIC_URL")
 	if dsn == "" {
 		dsn = "host=localhost port=5432 user=postgres password=123 dbname=postgres sslmode=disable"
