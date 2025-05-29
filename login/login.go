@@ -18,7 +18,7 @@ type User struct {
 func connectToDB() (*sql.DB, error) {
 	dsn := os.Getenv("DATABASE_PUBLIC_URL")
 	if dsn == "" {
-		dsn = "host=localhost port=5432 user=postgres password=123 dbname=postgres sslmode=disable"
+		dsn = "host=nozomi.proxy.rlwy.net port=10901 user=postgres password=AqbxOKFcClXSBPUvcvSUZBiOVorFdUfW dbname=railway sslmode=disable"
 	}
 	return sql.Open("postgres", dsn)
 }
