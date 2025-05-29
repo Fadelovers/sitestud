@@ -93,7 +93,7 @@ func main_func(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := db.Query("SELECT id, title, anons, full_text FROM post")
 	if err != nil {
-		http.Error(w, "алё гандон ", http.StatusInternalServerError)
+		http.Error(w, "Error querying the dataase", http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
